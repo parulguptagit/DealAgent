@@ -1,0 +1,75 @@
+🦃 THANKSGIVING DEAL FINDER - AI AGENT POC
+==========================================
+
+Welcome! You have a complete proof-of-concept AI agent for finding 
+Thanksgiving/Black Friday deals.
+
+📁 WHAT'S INCLUDED
+- app.py - Main Streamlit application
+- config.py - Configuration settings
+- requirements.txt - Python dependencies
+- test_setup.py - Setup validator
+- Complete documentation
+
+🚀 QUICK START (3 STEPS)
+
+1. Install dependencies:
+   pip install -r requirements.txt
+
+2. Create .env file with your OpenAI API key:
+   cp .env.example .env
+   (Edit .env and add: OPENAI_API_KEY=sk-your-key)
+
+3. Run the app:
+   streamlit run app.py
+
+📖 DOCUMENTATION FILES
+
+START WITH:
+→ SETUP_SUMMARY.md - Complete overview & quick start
+→ QUICKSTART.md - 5-minute setup guide
+
+THEN:
+→ README.md - Full project documentation
+→ DEPLOYMENT.md - Deploy to cloud platforms
+→ PROJECT_STRUCTURE.md - Architecture details
+
+🧪 TEST YOUR SETUP
+
+Before running:
+python test_setup.py
+
+This validates everything is configured correctly.
+
+💰 COSTS
+
+- GPT-4o API: ~$15-39/month (light usage)
+- Hosting: $0-25/month (depending on platform)
+- Total: ~$20-60/month for MVP
+
+🎯 FEATURES
+
+✓ AI-powered deal search across retailers
+✓ Smart timing analysis (buy now vs wait)
+✓ Automated price tracking (every 6 hours)
+✓ Intelligent alerts for price drops
+✓ Price history charts
+
+🛠️ TECH STACK
+
+- Frontend: Streamlit
+- AI: GPT-4o (OpenAI)
+- Database: SQLite
+- Scheduler: APScheduler
+- Language: Python 3.8+
+
+📝 NEXT STEPS
+
+1. Read SETUP_SUMMARY.md for complete overview
+2. Run test_setup.py to validate installation
+3. Start app locally: streamlit run app.py
+4. Deploy to cloud using DEPLOYMENT.md
+
+Need help? Check QUICKSTART.md for troubleshooting!
+
+Happy deal hunting! 🛍️
