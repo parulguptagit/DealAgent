@@ -11,8 +11,34 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import atexit
 import time
+import hashlib
 from dotenv import load_dotenv
 load_dotenv()
+
+try:
+    # Try Streamlit secrets first (for cloud deployment)
+    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+except:
+    # Fall back to environment variable (for local development)
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+def get_user_id():
+    """Generate unique user ID based on session"""
+    # On Streamlit Cloud, each user gets a unique session ID
+    # We'll use that to create a unique user ID
+    if 'user_id' not in st.session_state:
+        # Create a unique identifier for this session
+        session_id = st.session_state.get('_session_id', None)
+        if session_id is None:
+            # Generate a random ID if no session ID
+            import uuid
+            session_id = str(uuid.uuid4())
+            st.session_state._session_id = session_id
+        
+        # Create user_id from session_id
+        st.session_state.user_id = hashlib.md5(session_id.encode()).hexdigest()[:16]
+    
+    return st.session_state.user_id
 
 # Import our custom scraper
 try:
@@ -23,7 +49,7 @@ except ImportError:
     print("Warning: Scraper module not available, will use AI-generated deals only")
 
 # Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def parse_json_response(json_string):
     """
@@ -321,7 +347,11 @@ def main():
     
     # Session state for user ID (in production, use real auth)
     if 'user_id' not in st.session_state:
-        st.session_state.user_id = "demo_user"
+        st.session_state.user_id = get_user_id()
+    
+    # Display user session info (optional, for debugging)
+    with st.sidebar:
+        st.caption(f"Session ID: {st.session_state.user_id[:8]}...")
     
     # Header
     st.title("🦃 Thanksgiving Deal Finder")

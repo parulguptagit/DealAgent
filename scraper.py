@@ -18,6 +18,30 @@ from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import WebDriverException
 import atexit
 from urllib.parse import unquote
+import os
+
+def get_chrome_driver_path():
+    """Get Chrome/Chromium driver path based on environment"""
+    # On Streamlit Cloud, chromium is installed via packages.txt
+    if os.path.exists('/usr/bin/chromium-driver'):
+        return '/usr/bin/chromium-driver'
+    elif os.path.exists('/usr/bin/chromedriver'):
+        return '/usr/bin/chromedriver'
+    else:
+        # Local development
+        return None  # Will use default
+
+def get_chrome_binary_path():
+    """Get Chrome/Chromium binary path based on environment"""
+    # On Streamlit Cloud, use system chromium
+    if os.path.exists('/usr/bin/chromium'):
+        return '/usr/bin/chromium'
+    elif os.path.exists('/usr/bin/chromium-browser'):
+        return '/usr/bin/chromium-browser'
+    elif os.path.exists('/usr/bin/google-chrome'):
+        return '/usr/bin/google-chrome'
+    else:
+        return None  # Use default
 
 class DealScraper:
     """Scrapes product deals from various retailers using Selenium"""
@@ -58,7 +82,7 @@ class DealScraper:
         self.session.headers.update(self.headers)
 
     def _get_chrome_driver(self):
-        """Get or create Chrome driver instance (reusable)"""
+        """Get or create Chrome driver instance (cloud-compatible)"""
         if DealScraper._driver is None:
             try:
                 options = Options()
@@ -74,6 +98,10 @@ class DealScraper:
                 options.add_argument('--disable-gpu')
                 options.add_argument(f'user-agent={self.user_agent}')
                 
+                chrome_binary = get_chrome_binary_path()
+                if chrome_binary:
+                    options.binary_location = chrome_binary
+            
                 # Additional options to avoid detection
                 options.add_experimental_option("excludeSwitches", ["enable-automation"])
                 options.add_experimental_option('useAutomationExtension', False)
@@ -81,9 +109,14 @@ class DealScraper:
                 # Set page load strategy for faster loading
                 options.page_load_strategy = 'eager'
                 
-                # Create driver
-                DealScraper._driver = webdriver.Chrome(options=options)
-                
+                # Use system chromedriver if available (Streamlit Cloud)
+                driver_path = get_chrome_driver_path()
+                if driver_path:
+                    service = Service(executable_path=driver_path)
+                    DealScraper._driver = webdriver.Chrome(service=service, options=options)
+                else:
+                    DealScraper._driver = webdriver.Chrome(options=options)
+                    
                 # Mask webdriver property
                 DealScraper._driver.execute_script(
                     "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"

@@ -1,0 +1,35 @@
+# Environment variables
+.env
+*.env
+
+# Database (important - don't commit user data!)
+*.db
+deals.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Selenium
+chromedriver*
