@@ -14,6 +14,14 @@ import time
 from dotenv import load_dotenv
 load_dotenv()
 
+# Import our custom scraper
+try:
+    from scraper import scrape_product_deals
+    SCRAPING_ENABLED = True
+except ImportError:
+    SCRAPING_ENABLED = False
+    print("Warning: Scraper module not available, will use AI-generated deals only")
+
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -134,12 +142,28 @@ def mark_alert_read(alert_id):
     conn.commit()
     conn.close()
 
-# AI-powered deal finder using GPT-4o
+
+# AI-powered deal finder using GPT-4o with real web scraping
 def search_deals_with_ai(product_name, max_results=5):
-    """Use GPT-4o to search for deals and analyze pricing"""
-    
-    # Simulate web search results (in production, you'd use real web scraping or APIs)
-    # For demo purposes, we'll use GPT-4o to generate realistic deal data
+    """Search for deals using real web scraping first, then AI enhancement"""   
+
+    # Try real web scraping first
+    if SCRAPING_ENABLED:
+        try:
+            st.info("🔍 Searching real retailers (Amazon, Walmart, Best Buy)...")
+            real_deals = scrape_product_deals(product_name, max_results=max_results)           
+
+            if real_deals and len(real_deals) > 0:
+                st.success(f"✅ Found {len(real_deals)} real deals from live retailers!")
+                return real_deals
+            else:
+                st.warning("⚠️ No results from web scraping, using AI analysis...")
+        except Exception as e:
+            st.warning(f"⚠️ Web scraping unavailable: {str(e)[:100]}. Using AI analysis...")    
+
+    # Fallback to AI-generated deals (for demo or when scraping fails)
+
+    st.info("🤖 Using AI to analyze deals...")
     prompt = f"""You are a deal-finding assistant. Generate realistic Thanksgiving/Black Friday deal information for: {product_name}
 
 Return a JSON array with {max_results} deals from different retailers. Each deal should have:
@@ -170,6 +194,10 @@ Return ONLY valid JSON, no other text."""
         deals = parse_json_response(deals_json)
         print(deals)
         return deals
+    except json.JSONDecodeError as e:
+        st.error(f"Error parsing deals JSON: {str(e)}")
+        st.error(f"Response was: {deals_json[:200]}...")
+        return []
     except Exception as e:
         st.error(f"Error searching deals: {str(e)}")
         return []
@@ -367,7 +395,12 @@ def main():
                             'target_price': target_price,
                             'deals': deals
 
-                        } # Display results if we have a last search
+                        }
+                    else:
+
+                        st.error("No deals found. Please try again.")
+            else:
+                st.warning("Please enter a product name") # Display results if we have a last search
 
         if 'last_search' in st.session_state and st.session_state.last_search:
             search_data = st.session_state.last_search
@@ -387,7 +420,10 @@ def main():
                         col1, col2, col3, col4 = st.columns([3, 1, 1, 2])                      
                         with col1:
                             st.markdown(f"**{deal['retailer']}**")
-                            st.caption(deal['url'])                       
+                            # Show product name if available (from real scraping)
+                            if 'product_name' in deal and deal['product_name']:
+                                st.caption(f"📦 {deal['product_name'][:80]}...")
+                            st.caption(f"🔗 {deal['url'][:50]}...")                      
 
                         with col2:
                             st.metric("Price", f"${deal['price']:.2f}", 
@@ -400,7 +436,10 @@ def main():
 
                         with col4:
                             if i == 0:
-                                st.success("Best Price!")                        
+                                st.success("🏆 Best Price!")
+                            # Show if it's a real deal
+                            if deal['url'] and not 'example.com' in deal['url']:
+                                st.info("✨ Live Deal")    
 
                         st.divider()                
 

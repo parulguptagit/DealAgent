@@ -71,6 +71,17 @@ FEATURES = {
     "email_notifications": False,  # Not implemented in MVP
     "sms_notifications": False,  # Not implemented in MVP
     "browser_extension": False,  # Not implemented in MVP
+    "real_web_scraping": True,  # Use real web scraping (requires scraper.py)
+}
+
+# Web Scraping Configuration
+SCRAPING_CONFIG = {
+    "enabled": True,
+    "timeout": 10,  # seconds
+    "max_retries": 2,
+    "delay_between_retailers": 2,  # seconds (be respectful)
+    # Note: User-Agent is auto-detected based on your system (Linux/Mac/Windows)
+    # The scraper automatically uses Chrome user agent matching your platform
 }
 
 # Deployment Configuration
