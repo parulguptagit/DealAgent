@@ -207,7 +207,7 @@ Return ONLY valid JSON, no other text."""
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1-nano",
             messages=[
                 {"role": "system", "content": "You are a helpful shopping assistant that returns only valid JSON."},
                 {"role": "user", "content": prompt}
