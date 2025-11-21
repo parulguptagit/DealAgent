@@ -590,7 +590,7 @@ class DealScraper:
                     # Extract URL
                     link_elem = product.find('div', class_='sku-block-content-title')
                     href=link_elem.find('a',class_='product-list-item-link')
-                    url = "https://www.bestbuy.com" + href['href'] if href else search_url
+                    url = href['href'] if href else search_url
                     
                     # Check availability
                     availability = "In Stock"
