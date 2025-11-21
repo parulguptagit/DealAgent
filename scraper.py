@@ -334,6 +334,7 @@ class DealScraper:
                 except Exception as e:
                     print(f"Error parsing Amazon product: {e}")
                     continue
+            print("Amazon Deals: " , deals)
             return deals
             
         except Exception as e:
@@ -618,7 +619,7 @@ class DealScraper:
                 except Exception as e:
                     print(f"Error parsing Best Buy product: {e}")
                     continue
-            
+            print("Best Buy Deals: " , deals)
             return deals
             
         except Exception as e:
