@@ -257,7 +257,7 @@ Return ONLY valid JSON."""
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4.1-nano",
             messages=[
                 {"role": "system", "content": "You are a shopping strategy expert. Return only valid JSON."},
                 {"role": "user", "content": prompt}
@@ -318,7 +318,7 @@ def start_scheduler():
     # Run every 6 hours (adjust as needed for production)
     scheduler.add_job(
         func=check_all_products,
-        trigger=IntervalTrigger(minutes=5),
+        trigger=IntervalTrigger(hours=6),
         id='price_check_job',
         name='Check product prices',
         replace_existing=True

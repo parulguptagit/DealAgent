@@ -245,7 +245,6 @@ class DealScraper:
             # Use Selenium instead of session.get
             if self.use_selenium:
                 page_content = self._make_http_call(search_url)
-                print(page_content)
                 if not page_content:
                     print("⚠️ Failed to fetch Amazon with Selenium, trying requests...")
                     response = self.session.get(search_url, timeout=10)
@@ -262,7 +261,6 @@ class DealScraper:
             
             # Find product cards
             products = soup.find_all('div', {'data-component-type': 's-search-result'}, limit=max_results)
-            print(products)
             for product in products:
                 try:
                     # Extract title
@@ -277,7 +275,6 @@ class DealScraper:
                         continue
                     price_str = price_elem.get_text(strip=True).replace(',', '').replace('$', '')
                     price = float(price_str)
-                    print(price)
                     # Extract original price (if on sale)
                     original_price_elem = product.find('span', class_='a-price a-text-price')
                     original_price_text = original_price_elem.find('span',class_='a-offscreen')
@@ -337,7 +334,6 @@ class DealScraper:
                 except Exception as e:
                     print(f"Error parsing Amazon product: {e}")
                     continue
-            print(deals)
             return deals
             
         except Exception as e:
@@ -563,7 +559,6 @@ class DealScraper:
             for product in products:
                 try:
                     # Extract title
-                    print("best buy product:" ,product)
                     title_elem = product.find('h2', class_='product-title')
                     if not title_elem:
                         continue
@@ -579,7 +574,6 @@ class DealScraper:
                     # Extract original price
                     original_price = price
                     original_elem = product.find('span', class_="font-sans text-default text-style-body-md-400")
-                    print(original_elem)
                     if original_elem:
                         was_price = original_elem.get_text(strip=True).replace(',', '').replace('$', '').strip()
                         if was_price:
