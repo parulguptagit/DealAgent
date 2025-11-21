@@ -334,6 +334,7 @@ def main():
     st.set_page_config(
         page_title="Thanksgiving Deal Finder",
         page_icon="🦃",
+        initial_sidebar_state="auto",
         layout="wide"
     )
     
